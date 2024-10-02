@@ -19,7 +19,7 @@ class Gateway:
         }
         self.clientId = os.getenv("CLIENT_ID")
         self.clientSecret = os.getenv("CLIENT_SECRET")
-        self.AccessToken = os.getenv("ACCESS_TOKEN")
+        self.partnerToken = os.getenv("ACCESS_TOKEN")
         self.mediaType = ''
         self.bearerToken = ''
 
@@ -53,7 +53,7 @@ class Gateway:
         
         headers = {
             "Authorization": "Bearer " + self.bearerToken,
-            "PartnerToken": self.AccessToken,
+            "PartnerToken": self.partnerToken,
             "Content-Type": "application/json"
         }
 
