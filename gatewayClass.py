@@ -62,7 +62,7 @@ class Gateway:
         elif self.mediaType == 'get':
             response = requests.get(self.req_url, headers=headers)
         else:
-            return "Unsupported Media Type"
+            return "Unsupported operation"
         
         return response.json()
 
