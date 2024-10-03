@@ -129,7 +129,7 @@ class Gateway:
 
     def modifySubscription(self, requestData, id):
         
-        self.req_url = self.url + 'refunds/' + str(id)
+        self.req_url = self.url + 'subscriptions/' + str(id)
         self.requestData = requestData
         self.mediaType = 'patch'
         
