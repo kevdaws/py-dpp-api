@@ -40,6 +40,7 @@ class Gateway:
     def getBearerToken(self):
 
         response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.constants).json()
+        
         self.bearerToken = response['access_token']
         bearerTokenExpiry = response['tokenExpiry_time']
 
