@@ -43,10 +43,7 @@ class Gateway:
         self.bearerToken = response['access_token']
         bearerTokenExpiry = response['tokenExpiry_time']
 
-        return {
-            "Bearer token": self.bearerToken,
-            "Bearer token expiry": bearerTokenExpiry
-        }
+        return "Bearer token refreshed, expires at " + str(bearerTokenExpiry)
 
     # Master method for making calls to the API, should not be called invoked directly.
     def performRequest(self):
