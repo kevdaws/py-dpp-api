@@ -26,7 +26,7 @@ class Gateway:
     # Switch between sandbox and production environments.
     def switchEnv(self):
         
-        if self.env = 'sandbox':
+        if self.env == 'sandbox':
             self.env = 'production'
             self.url = "https://api.deluxe.com/dpp/v1/gateway/"
             self.token_url = "https://api.deluxe.com/secservices/oauth2/v2/token"
@@ -241,4 +241,3 @@ class Gateway:
         self.mediaType = 'post'
 
         return Gateway.performRequest(self)
-
