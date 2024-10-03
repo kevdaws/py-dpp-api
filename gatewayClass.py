@@ -63,6 +63,9 @@ class Gateway:
             response = requests.get(self.req_url, headers=headers)
         else:
             return "Unsupported operation"
+
+        # Reset mediaType
+        self.mediaType = ''
         
         return response.json()
 
