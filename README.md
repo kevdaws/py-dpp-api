@@ -6,7 +6,7 @@
 pip install requests
 ```
 
-## Environment variable file structure
+## .env file structure
 
 ```.env
 CLIENT_ID = {CLIENT_ID}
