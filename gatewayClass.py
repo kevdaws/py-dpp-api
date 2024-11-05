@@ -4,7 +4,6 @@
 import os
 import requests
 import json
-import testData
 
 class Gateway:
 
