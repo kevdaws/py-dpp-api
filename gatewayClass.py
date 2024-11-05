@@ -40,10 +40,14 @@ class Gateway:
     # Refreshes bearer token, returns token and expiry time.
     def getBearerToken(self):
 
-        response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.constants).json()
-        
-        self.bearerToken = response['access_token']
-        bearerTokenExpiry = response['tokenExpiry_time']
+        response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.constants)
+
+        try:
+            response.raise_for_status()
+            self.bearerToken = response.json()['access_token']
+            bearerTokenExpiry = response.json()['tokenExpiry_time']
+        except requests.exceptions.HTTPError as err:
+            return err
 
         return "Bearer token refreshed, expires at " + str(bearerTokenExpiry)
 
