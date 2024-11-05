@@ -20,7 +20,7 @@ class Gateway:
         }
         self.clientId = os.getenv("CLIENT_ID")
         self.clientSecret = os.getenv("CLIENT_SECRET")
-        self.partnerToken = os.getenv("ACCESS_TOKEN")
+        self.partnerToken = os.getenv("PARTNER_TOKEN")
         self.mediaType = ''
         self.bearerToken = ''
 
@@ -53,8 +53,7 @@ class Gateway:
 
     # Master method for making calls to the API, should not be called invoked directly.
     def performRequest(self):
-        
-        
+         
         headers = {
             "Authorization": "Bearer " + self.bearerToken,
             "PartnerToken": self.partnerToken,
@@ -255,9 +254,3 @@ class Gateway:
         self.mediaType = 'post'
 
         return Gateway.performRequest(self)
-
-TestGW = Gateway()
-
-TestGW.getBearerToken()
-
-print(TestGW.modifyCustomer(testData.modifyCustomer, 32905))
