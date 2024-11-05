@@ -1,7 +1,10 @@
 # Python Implementation of DPP Experience API
 
 ## Requires "requests" library
-- pip install requests
+
+```console
+pip install requests
+```
 
 ## Environment variable file structure
 
