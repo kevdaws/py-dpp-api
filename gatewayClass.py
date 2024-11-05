@@ -14,7 +14,7 @@ class Gateway:
         self.url = "https://sandbox.api.deluxe.com/dpp/v1/gateway/"
         self.token_url = "https://sandbox.api.deluxe.com/secservices/oauth2/v2/token"
         self.env = 'sandbox'
-        self.constants = {
+        self.body = {
             "grant_type": "client_credentials",
             "scope": "mulesoft_scope"
         }
@@ -40,7 +40,7 @@ class Gateway:
     # Refreshes bearer token, returns token and expiry time.
     def getBearerToken(self):
 
-        response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.constants)
+        response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.body)
 
         try:
             response.raise_for_status()
