@@ -4,6 +4,7 @@
 import os
 import requests
 import json
+import testData
 
 class Gateway:
 
@@ -49,6 +50,7 @@ class Gateway:
     # Master method for making calls to the API, should not be called invoked directly.
     def performRequest(self):
         
+        
         headers = {
             "Authorization": "Bearer " + self.bearerToken,
             "PartnerToken": self.partnerToken,
@@ -67,7 +69,11 @@ class Gateway:
         # Reset mediaType
         self.mediaType = ''
         
-        return response.json()
+        try:
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as err:
+            return err
 
     # Methods for all endpoints as of 09/23/24
     # Requirements outlined in DPP Experience API documentation: https://developer.deluxe.com/s/dpp-api-reference
@@ -245,3 +251,9 @@ class Gateway:
         self.mediaType = 'post'
 
         return Gateway.performRequest(self)
+
+TestGW = Gateway()
+
+TestGW.getBearerToken()
+
+print(TestGW.modifyCustomer(testData.modifyCustomer, 32905))
