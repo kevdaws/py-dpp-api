@@ -1,9 +1,10 @@
-* Python Implementation of DPP Experience API
+# Python Implementation of DPP Experience API
 
-** Requires "requests" library
+## Requires "requests" library
 - pip install requests
 
-** Environment variable file structure
+## Environment variable file structure
+
 ```.env
 CLIENT_ID = {CLIENT_ID}
 CLIENT_SECRET = {CLIENT_SECRET}
