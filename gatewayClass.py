@@ -1,4 +1,4 @@
-# DPP Experience API Sandbox - Python Implementation
+# DPP Experience API - Python Implementation
 # Kevin Dawson - 09/23/24
 
 import os
