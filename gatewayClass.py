@@ -17,9 +17,9 @@ class Gateway:
             "grant_type": "client_credentials",
             "scope": "mulesoft_scope"
         }
-        self.clientId = os.getenv("CLIENT_ID")
-        self.clientSecret = os.getenv("CLIENT_SECRET")
-        self.partnerToken = os.getenv("PARTNER_TOKEN")
+        self.clientId = os.getenv("SANDBOX_ID")
+        self.clientSecret = os.getenv("SANDBOX_SECRET")
+        self.partnerToken = os.getenv("SANDBOX_TOKEN")
         self.mediaType = ''
         self.bearerToken = ''
 
@@ -30,13 +30,19 @@ class Gateway:
             self.env = 'production'
             self.url = "https://api.deluxe.com/dpp/v1/gateway/"
             self.token_url = "https://api.deluxe.com/secservices/oauth2/v2/token"
+            self.clientId = os.getenv("PROD_ID")
+            self.clientSecret = os.getenv("PROD_SECRET")
+            self.partnerToken = os.getenv("PROD_TOKEN")
         else:
             self.env = 'sandbox'
             self.url = "https://sandbox.api.deluxe.com/dpp/v1/gateway/"
             self.token_url = "https://sandbox.api.deluxe.com/secservices/oauth2/v2/token"
+            self.clientId = os.getenv("SANDBOX_ID")
+            self.clientSecret = os.getenv("SANDBOX_SECRET")
+            self.partnerToken = os.getenv("SANDBOX_TOKEN")
 
 
-    # Refreshes bearer token, returns token and expiry time.
+    # Refreshes bearer token and expiry, must be called prior to making a request.
     def getBearerToken(self):
 
         response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.body)
@@ -44,29 +50,28 @@ class Gateway:
         try:
             response.raise_for_status()
             self.bearerToken = response.json()['access_token']
-            bearerTokenExpiry = response.json()['tokenExpiry_time']
+            self.bearerTokenExpiry = response.json()['tokenExpiry_time']
+        
         except requests.exceptions.HTTPError as err:
             return err
 
-        return "Bearer token refreshed, expires at " + str(bearerTokenExpiry)
-
     # Master method for making calls to the API, should not be called invoked directly.
     def performRequest(self):
-         
+        
         headers = {
             "Authorization": "Bearer " + self.bearerToken,
             "PartnerToken": self.partnerToken,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
-        if self.mediaType == 'post':
-            response = requests.post(self.req_url, data=json.dumps(self.requestData), headers=headers)
-        elif self.mediaType == 'patch':
-            response = requests.patch(self.req_url, data=json.dumps(self.requestData), headers=headers)
-        elif self.mediaType == 'get':
-            response = requests.get(self.req_url, headers=headers)
-        else:
-            return "Unsupported operation"
+            if self.mediaType == 'post':
+                response = requests.post(self.req_url, data=json.dumps(self.requestData), headers=headers)
+            elif self.mediaType == 'patch':
+                response = requests.patch(self.req_url, data=json.dumps(self.requestData), headers=headers)
+            elif self.mediaType == 'get':
+                response = requests.get(self.req_url, headers=headers)
+            else:
+                return "Unsupported operation"
 
         # Reset mediaType
         self.mediaType = ''
@@ -253,3 +258,80 @@ class Gateway:
         self.mediaType = 'post'
 
         return Gateway.performRequest(self)
+
+TestGW = Gateway()
+
+requestData = {
+"paymentType":"Sale",
+    
+
+    "amount": {
+        "amount": 1,
+        "currency": "USD"
+    },
+    "paymentMethod": {
+        "card": {
+            "card": "4111111111111111",
+            "expiry": "11/33",
+            "cvv": "201"
+        },
+        "billingAddress": {
+            "state": "CA",
+            "address": "123 Main St",
+            "lastName": "AuthorizewithCard",
+            "firstName": "SyedMuleTest",
+            "email": "jane@email.com",
+            "country": "USA",
+            "phone": "650-555-1234",
+            "city": "San Francisco",
+            "address2": "Apt 5",
+            "postalCode": "94111"
+        }
+    },
+    "shippingAddress": {
+        "state": "CA",
+        "address": "123 Main St",
+        "lastName": "Doe",
+        "firstName": "Jane",
+        "email": "jane@email.com",
+        "country": "USA",
+        "phone": "650-555-1234",
+        "city": "San Francisco",
+        "address2": "Apt 5",
+        "postalCode": "94111"
+    },
+    "level2": {
+        "customerRefNumber": "7898654",
+        "localTaxFlag": False,
+        "purchaseCard": False,
+        "shippingZip": "94002",
+        "taxAmount": 2.33
+    },
+    "level3": [
+        {
+            "skuCode": "SKU1234",
+            "quantity": 2,
+            "price": 2,
+            "description": "Banana",
+            "unitOfMeasure": "Dozen",
+            "itemDiscountAmount": 0.99,
+            "itemDiscountRate": 0.1
+        }
+    ],
+    "customData": [
+        {
+            "name": "Invoice Number",
+            "value": "inv123423"
+        },
+        {
+            "name": "Invoice Number",
+            "value": "inv1234"
+        }
+    ],
+    "merchantCategory": "E-Commerce"
+}
+
+
+
+
+print(TestGW.createPayment(requestData))
