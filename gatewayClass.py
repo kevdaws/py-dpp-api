@@ -13,13 +13,6 @@ class Gateway:
         self.url = "https://sandbox.api.deluxe.com/dpp/v1/gateway/"
         self.token_url = "https://sandbox.api.deluxe.com/secservices/oauth2/v2/token"
         self.env = 'sandbox'
-        self.body = {
-            "grant_type": "client_credentials",
-            "scope": "mulesoft_scope"
-        }
-        self.clientId = os.getenv("SANDBOX_ID")
-        self.clientSecret = os.getenv("SANDBOX_SECRET")
-        self.partnerToken = os.getenv("SANDBOX_TOKEN")
         self.mediaType = ''
         self.bearerToken = ''
 
@@ -30,22 +23,21 @@ class Gateway:
             self.env = 'production'
             self.url = "https://api.deluxe.com/dpp/v1/gateway/"
             self.token_url = "https://api.deluxe.com/secservices/oauth2/v2/token"
-            self.clientId = os.getenv("PROD_ID")
-            self.clientSecret = os.getenv("PROD_SECRET")
-            self.partnerToken = os.getenv("PROD_TOKEN")
         else:
             self.env = 'sandbox'
             self.url = "https://sandbox.api.deluxe.com/dpp/v1/gateway/"
             self.token_url = "https://sandbox.api.deluxe.com/secservices/oauth2/v2/token"
-            self.clientId = os.getenv("SANDBOX_ID")
-            self.clientSecret = os.getenv("SANDBOX_SECRET")
-            self.partnerToken = os.getenv("SANDBOX_TOKEN")
 
 
     # Refreshes bearer token and expiry, must be called prior to making a request.
-    def getBearerToken(self):
+    def getBearerToken(self, clientId, clientSecret):
 
-        response = requests.post(self.token_url, auth=(self.clientId, self.clientSecret), data=self.body)
+        body = {
+            "grant_type": "client_credentials",
+            "scope": "mulesoft_scope"
+        }
+        
+        response = requests.post(self.token_url, auth=(clientId, clientSecret), data=body)
 
         try:
             response.raise_for_status()
@@ -56,11 +48,11 @@ class Gateway:
             return err
 
     # Master method for making calls to the API, should not be called invoked directly.
-    def performRequest(self):
+    def performRequest(self, accessToken):
         
         headers = {
             "Authorization": "Bearer " + self.bearerToken,
-            "PartnerToken": self.partnerToken,
+            "PartnerToken": accessToken,
             "Content-Type": "application/json",
         }
 
@@ -85,176 +77,176 @@ class Gateway:
     # Methods for all endpoints as of 09/23/24
     # Requirements outlined in DPP Experience API documentation: https://developer.deluxe.com/s/dpp-api-reference
 
-    def createPayment(self, requestData):
+    def createPayment(self, accessToken, requestData):
 
         self.req_url = self.url + 'payments'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def cancelPayment(self, requestData):
+    def cancelPayment(self, accessToken, requestData):
         
         self.req_url = self.url + 'payments/cancel'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def completePayment(self, requestData):
+    def completePayment(self, accessToken, requestData):
         
         self.req_url = self.url + 'payments/complete'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def authorizePayment(self, requestData):
+    def authorizePayment(self, accessToken, requestData):
         
         self.req_url = self.url + 'payments/authorize'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def searchPayment(self, requestData):
+    def searchPayment(self, accessToken, requestData):
         
         self.req_url = self.url + 'payments/search'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def refundPayment(self, requestData):
+    def refundPayment(self, accessToken, requestData):
         
         self.req_url = self.url + 'refunds'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def createSubscription(self, requestData):
+    def createSubscription(self, accessToken, requestData):
         
         self.req_url = self.url + 'subscriptions'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def modifySubscription(self, requestData, id):
+    def modifySubscription(self, accessToken, requestData, id):
         
         self.req_url = self.url + 'subscriptions/' + str(id)
         self.requestData = requestData
         self.mediaType = 'patch'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def createPaymentMethod(self, requestData):
+    def createPaymentMethod(self, accessToken, requestData):
         
         self.req_url = self.url + 'paymentmethods'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def modifyPaymentMethod(self, requestData, id):
+    def modifyPaymentMethod(self, accessToken, requestData, id):
         
         self.req_url = self.url + 'paymentmethods/' + str(id)
         self.requestData = requestData
         self.mediaType = 'patch'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def generateToken(self, requestData):
+    def generateToken(self, accessToken, requestData):
         
         self.req_url = self.url + 'paymentmethods/token'
         self.requestData = requestData
         self.mediaType = 'post'
         
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def createCustomer(self, requestData):
+    def createCustomer(self, accessToken, requestData):
         
         self.req_url = self.url + 'customers'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def getCustomers(self):
+    def getCustomers(self, accessToken):
 
         self.req_url = self.url + 'customers'
         self.mediaType = 'get'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def getCustomer(self, id):
+    def getCustomer(self, accessToken, id):
 
         self.req_url = self.url + 'customers/' + str(id)
         self.mediaType = 'get'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def modifyCustomer(self, requestData, id):
+    def modifyCustomer(self, accessToken, requestData, id):
         
         self.req_url = self.url + 'customers/' + str(id)
         self.requestData = requestData
         self.mediaType = 'patch'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def closeBatch(self, requestData):
+    def closeBatch(self, accessToken, requestData):
 
         self.req_url = self.url + 'batches'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def retrieveReport(self, requestData):
+    def retrieveReport(self, accessToken, requestData):
 
         self.req_url = self.url + 'reports'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def createPaymentLink(self, requestData):
+    def createPaymentLink(self, accessToken, requestData):
 
         self.req_url = self.url + 'paymentlinks'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def subscribeEvent(self, requestData):
+    def subscribeEvent(self, accessToken, requestData):
 
         self.req_url = self.url + 'events/subscribe'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def unsubscribeEvent(self, requestData):
+    def unsubscribeEvent(self, accessToken, requestData):
 
         self.req_url = self.url + 'events/unsubscribe'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def testEvent(self, requestData):
+    def testEvent(self, accessToken, requestData):
 
         self.req_url = self.url + 'events/test'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
 
-    def resendEvent(self, requestData):
+    def resendEvent(self, accessToken, requestData):
 
         self.req_url = self.url + 'events/resend'
         self.requestData = requestData
         self.mediaType = 'post'
 
-        return Gateway.performRequest(self)
+        return Gateway.performRequest(self, accessToken)
